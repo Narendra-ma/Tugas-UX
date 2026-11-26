@@ -22,7 +22,14 @@ class DashboardController extends Controller
             ->overlapping(today()->toDateString(), today()->toDateString())
             ->distinct()->count('slot_id');
 
+        $today = today()->toDateString();
+        $slots = Slot::where('is_active', true)
+            ->whereHas('garage', fn ($g) => $g->where('owner_id', $ownerId))
+            ->with(['bookings' => fn ($b) => $b->blocking()->overlapping($today, $today)->with('user')])
+            ->orderBy('code')->get();
+
         return view('owner.dashboard', [
+            'slots' => $slots,
             'activeCount' => Booking::forOwner($ownerId)->active()->count(),
             'pendingCount' => Booking::forOwner($ownerId)->where('status', 'menunggu_konfirmasi')->count(),
             'totalSlots' => $totalSlots,
