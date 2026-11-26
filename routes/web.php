@@ -8,7 +8,6 @@ use App\Http\Controllers\Owner;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [GarageController::class, 'index'])->name('garages.index');
-Route::get('/garasi/{garage}', [GarageController::class, 'show'])->name('garages.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/masuk', [AuthController::class, 'showLogin'])->name('login');

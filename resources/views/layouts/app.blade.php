@@ -25,7 +25,7 @@
         </button>
         <div class="collapse navbar-collapse" id="nav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{{ route('garages.index') }}">Cari Garasi</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('garages.index') }}">Beranda</a></li>
                 @auth
                     @if (auth()->user()->isOwner())
                         <li class="nav-item"><a class="nav-link" href="{{ route('owner.dashboard') }}">Ringkasan</a></li>
