@@ -8,7 +8,7 @@ use App\Models\Garage;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-// Data contoh berdasarkan wawancara Tugas 1 UX (kelompok 10). Harga garasi Surya hanya perkiraan.
+// Data contoh berdasarkan wawancara Tugas 1 UX (kelompok 10): hanya Garasi Surya. Tarif hanya perkiraan.
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
@@ -31,26 +31,6 @@ class DatabaseSeeder extends Seeder
         ]);
         foreach (['A1', 'A2', 'A3', 'A4', 'A5', 'A6'] as $code) {
             $garasi->slots()->create(['code' => $code]);
-        }
-
-        // garasi kedua supaya filter lokasi dan harga ada isinya (contoh dari narasumber Surabaya)
-        $pak = User::factory()->owner()->create([
-            'name' => 'Pak Contoh',
-            'email' => 'contoh@garasi.test',
-            'phone' => '081234500002',
-        ]);
-        $sby = Garage::factory()->for($pak, 'owner')->create([
-            'name' => 'Garasi Contoh Surabaya',
-            'city' => 'Surabaya',
-            'address' => 'Jl. Contoh No. 1, Surabaya',
-            'description' => 'Tertutup, ada CCTV dan penjaga.',
-            'size_note' => 'Muat 3 mobil',
-            'price_daily' => 25000,
-            'price_weekly' => 120000,
-            'price_monthly' => 400000,
-        ]);
-        foreach (['B1', 'B2', 'B3'] as $code) {
-            $sby->slots()->create(['code' => $code]);
         }
 
         $dimas = User::factory()->create(['name' => 'Dimas', 'email' => 'dimas@example.test', 'phone' => '081234500003']);

@@ -19,6 +19,29 @@
     </div></div></div>
 </div>
 
+<h2 class="h5">Slot hari ini</h2>
+<div class="row g-2 mb-4">
+    @foreach ($slots as $slot)
+        @php
+            $b = $slot->bookings->first();
+            $state = ! $b ? ['Kosong', 'success'] : ($b->status === 'dibayar' ? ['Terisi', 'danger'] : ['Menunggu', 'warning']);
+        @endphp
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="border rounded p-2 text-center h-100">
+                <div class="h5 mb-1">{{ $slot->code }}</div>
+                <span class="badge text-bg-{{ $state[1] }}">{{ $state[0] }}</span>
+                @if ($b)<div class="small mt-1">{{ $b->user->name }}<br>{{ $b->plate }}</div>@endif
+            </div>
+        </div>
+    @endforeach
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a class="btn btn-primary" href="{{ route('owner.bookings.index') }}">Lihat pengajuan</a>
+    <a class="btn btn-outline-primary" href="{{ route('owner.documents.index') }}">Simpan surat perjanjian</a>
+    <a class="btn btn-outline-primary" href="{{ route('owner.garages.index') }}">Atur tarif dan slot</a>
+</div>
+
 <div class="row g-4">
     <div class="col-lg-6">
         <h2 class="h5 text-danger">Terlambat ({{ $overdue->count() }})</h2>

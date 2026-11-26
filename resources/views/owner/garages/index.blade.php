@@ -3,7 +3,9 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="h3 mb-0">Garasi &amp; slot saya</h1>
-    <a class="btn btn-primary" href="{{ route('owner.garages.create') }}">Tambah garasi</a>
+    @if ($garages->isEmpty())
+        <a class="btn btn-primary" href="{{ route('owner.garages.create') }}">Tambah garasi</a>
+    @endif
 </div>
 
 @forelse ($garages as $garage)

@@ -51,7 +51,7 @@
         </div>
     </div>
 @empty
-    <p class="text-body-secondary">Belum ada pengajuan. <a href="{{ route('garages.index') }}">Cari garasi</a></p>
+    <p class="text-body-secondary">Belum ada pengajuan. <a href="{{ route('garages.index') }}">Lihat slot</a></p>
 @endforelse
 
 {{ $bookings->links('pagination::bootstrap-5') }}
