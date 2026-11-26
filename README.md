@@ -1,13 +1,13 @@
 # Garasi Surya
 
-Website sewa garasi mobil (Laravel 12 + Bootstrap 5 + MySQL). Dibuat untuk Tugas 1 User Experience, kelompok 10, dengan data dari wawancara 8 narasumber. Persona utamanya Ibu Surya, pemilik garasi 6 slot di Karangasem, Bali, yang sekarang masih mengurus surat dan pembayaran secara manual.
+Website sewa garasi mobil khusus Garasi Surya milik Ibu Surya (Laravel 12 + Bootstrap 5 + MySQL). Dibuat untuk Tugas 1 User Experience, kelompok 10, dengan data dari wawancara 8 narasumber. Persona utamanya Ibu Surya, pemilik garasi 6 slot di Karangasem, Bali, yang sekarang masih mengurus surat dan pembayaran secara manual.
 
 Status: prototipe untuk belajar dan portofolio, belum untuk produksi. Lihat `docs/TODO.md` untuk yang belum dikerjakan.
 
 ## Fitur yang sudah ada
 
 Penyewa
-- Daftar, masuk, cari garasi (filter lokasi, harga bulanan, ketersediaan tanggal).
+- Daftar, masuk, lihat landing page Garasi Surya (tarif, status 6 slot, cek ketersediaan per tanggal).
 - Lihat status slot (tersedia / menunggu / terisi) lalu ajukan sewa harian, mingguan, atau bulanan.
 - Pantau status pengajuan, batalkan sebelum dikonfirmasi, unggah bukti bayar.
 
@@ -32,7 +32,11 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Buat database `garasi_surya`, sesuaikan `DB_*` di `.env`, lalu:
+Pilih salah satu cara menyiapkan database.
+
+Cara SQL: `mysql -u root -p < database/garasi_surya.sql` (membuat database `garasi_surya`, tabel, dan data Garasi Surya). Di `.env` pakai `QUEUE_CONNECTION=sync`, lalu jalankan `php artisan storage:link` dan `php artisan serve`.
+
+Cara migrasi Laravel: buat database `garasi_surya`, sesuaikan `DB_*` di `.env`, lalu:
 
 ```
 php artisan migrate --seed
@@ -49,7 +53,6 @@ Bootstrap dimuat dari CDN, jadi tidak perlu `npm install`.
 | Peran | Email | Kata sandi |
 |---|---|---|
 | Pemilik (Ibu Surya) | surya@garasi.test | password |
-| Pemilik (contoh Surabaya) | contoh@garasi.test | password |
 | Penyewa (Dimas) | dimas@example.test | password |
 
 Ganti semuanya sebelum dipublikasikan.
