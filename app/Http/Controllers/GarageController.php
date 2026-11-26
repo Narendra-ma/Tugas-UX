@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Garage;
 use Illuminate\Http\Request;
 
-// Situs ini hanya melayani satu garasi: Garasi Surya.
 class GarageController extends Controller
 {
     public function index(Request $request)
@@ -18,8 +17,7 @@ class GarageController extends Controller
         $start = $dates['start_date'] ?? today()->toDateString();
         $end = $dates['end_date'] ?? $start;
 
-        // eager load booking yang bentrok saja, dipakai displayStatus() di view
-        $garage = Garage::active()->with('owner')->orderBy('id')->firstOrFail();
+        $garage = Garage::active()->with('owner')->oldest('id')->firstOrFail();
         $garage->load(['slots' => fn ($q) => $q->where('is_active', true)->orderBy('code')
             ->with(['bookings' => fn ($b) => $b->blocking()->overlapping($start, $end)])]);
 

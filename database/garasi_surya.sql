@@ -1,8 +1,7 @@
--- Garasi Surya: skema + data awal (MySQL 8 / InnoDB)
--- Hanya satu garasi (Garasi Surya, milik Ibu Surya, 6 slot). Sumber data: laporan UX kelompok 10.
--- Pakai SALAH SATU: file ini ATAU `php artisan migrate --seed`. Jangan dua-duanya.
+-- Skema dan data awal Garasi Surya (MySQL 8).
 -- Impor: mysql -u root -p < database/garasi_surya.sql
--- Kalau impor lewat file ini, di .env pakai QUEUE_CONNECTION=sync (tabel jobs tidak dibuat).
+-- Jangan dipakai bersamaan dengan `php artisan migrate`. Tabel jobs tidak dibuat,
+-- jadi di .env pakai QUEUE_CONNECTION=sync.
 
 CREATE DATABASE IF NOT EXISTS garasi_surya CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE garasi_surya;
@@ -12,7 +11,6 @@ DROP TABLE IF EXISTS blacklists, documents, bookings, slots, garages,
     cache_locks, cache, sessions, password_reset_tokens, users;
 SET FOREIGN_KEY_CHECKS = 1;
 
--- akun: role 'owner' (Ibu Surya) atau 'tenant' (penyewa)
 CREATE TABLE users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -58,7 +56,6 @@ CREATE TABLE cache_locks (
     KEY cache_locks_expiration_index (expiration)
 ) ENGINE=InnoDB;
 
--- garasi dan tarif (tarif rupiah bulat)
 CREATE TABLE garages (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     owner_id BIGINT UNSIGNED NOT NULL,
@@ -79,7 +76,7 @@ CREATE TABLE garages (
     CONSTRAINT garages_owner_id_fk FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- satu baris per tempat parkir (A1..A6); dinonaktifkan, tidak dihapus
+-- slot dinonaktifkan, tidak dihapus, supaya riwayat booking utuh
 CREATE TABLE slots (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     garage_id BIGINT UNSIGNED NOT NULL,
@@ -92,7 +89,7 @@ CREATE TABLE slots (
     CONSTRAINT slots_garage_id_fk FOREIGN KEY (garage_id) REFERENCES garages (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- pengajuan dan sewa. Status yang menahan slot: menunggu_konfirmasi, menunggu_bayar, dibayar
+-- yang menahan slot: menunggu_konfirmasi, menunggu_bayar, dibayar
 CREATE TABLE bookings (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT UNSIGNED NOT NULL,
@@ -121,7 +118,6 @@ CREATE TABLE bookings (
     CONSTRAINT bookings_dates_chk CHECK (end_date >= start_date)
 ) ENGINE=InnoDB;
 
--- surat perjanjian, bukti bayar, identitas
 CREATE TABLE documents (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     booking_id BIGINT UNSIGNED NOT NULL,
@@ -134,7 +130,6 @@ CREATE TABLE documents (
     CONSTRAINT documents_booking_id_fk FOREIGN KEY (booking_id) REFERENCES bookings (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- catatan khusus penyewa bermasalah (plat / HP yang sama diberi tanda merah saat mengajukan lagi)
 CREATE TABLE blacklists (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     owner_id BIGINT UNSIGNED NOT NULL,
@@ -152,8 +147,7 @@ CREATE TABLE blacklists (
     CONSTRAINT blacklists_booking_id_fk FOREIGN KEY (booking_id) REFERENCES bookings (id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- ---------- data awal ----------
--- Semua kata sandi akun contoh: password (ganti sebelum dipublikasikan)
+-- data awal, kata sandi semua akun: password
 SET @pw = '$2y$12$ngsqjJDK9W/.E9dqzhv0nOLxBzaVdd/fw24oJ5q7NVviCu.nS8LEy';
 
 INSERT INTO users (id, name, email, role, phone, password, created_at, updated_at) VALUES
@@ -163,7 +157,7 @@ INSERT INTO users (id, name, email, role, phone, password, created_at, updated_a
 (4, 'Rudi', 'rudi@example.test', 'tenant', '081234500005', @pw, NOW(), NOW()),
 (5, 'Penyewa Contoh Bermasalah', 'kabur@example.test', 'tenant', '081234500009', @pw, NOW(), NOW());
 
--- Tarif hanya perkiraan (wawancara cuma menyebut kisaran Rp 300.000 - 750.000 per bulan)
+-- tarif cuma perkiraan, wawancara hanya menyebut Rp 300.000 - 750.000 per bulan
 INSERT INTO garages (id, owner_id, name, city, address, description, size_note,
                      price_daily, price_weekly, price_monthly, is_active, created_at, updated_at) VALUES
 (1, 1, 'Garasi Surya', 'Karangasem',
@@ -187,7 +181,7 @@ INSERT INTO bookings (id, user_id, slot_id, car_type, plate, period, start_date,
 (3, 4, 3, 'Xenia', 'DK 3333 CC', 'monthly', DATE_ADD(CURDATE(), INTERVAL 2 DAY), DATE_ADD(CURDATE(), INTERVAL 32 DAY),
  500000, 'menunggu_konfirmasi', DATE_ADD(NOW(), INTERVAL 24 HOUR), NULL, NOW(), NOW(), NOW());
 
--- kasus penyewa yang marah saat diingatkan lalu keluar tanpa melunasi
+-- kasus dari wawancara: penyewa marah saat diingatkan lalu keluar tanpa melunasi
 INSERT INTO blacklists (owner_id, name, phone, plate, reason, arrears_amount, created_at, updated_at) VALUES
 (1, 'Penyewa Contoh Bermasalah', '081234500009', 'DK 9999 ZZ',
  'Marah saat diingatkan jatuh tempo dan keluar tanpa melunasi', 500000, NOW(), NOW());

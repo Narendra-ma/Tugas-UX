@@ -32,11 +32,11 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Pilih salah satu cara menyiapkan database.
+Database bisa disiapkan lewat SQL atau migrasi.
 
-Cara SQL: `mysql -u root -p < database/garasi_surya.sql` (membuat database `garasi_surya`, tabel, dan data Garasi Surya). Di `.env` pakai `QUEUE_CONNECTION=sync`, lalu jalankan `php artisan storage:link` dan `php artisan serve`.
+Lewat SQL: `mysql -u root -p < database/garasi_surya.sql`, set `QUEUE_CONNECTION=sync` di `.env`, lalu `php artisan storage:link` dan `php artisan serve`.
 
-Cara migrasi Laravel: buat database `garasi_surya`, sesuaikan `DB_*` di `.env`, lalu:
+Lewat migrasi: buat database `garasi_surya`, sesuaikan `DB_*` di `.env`, lalu:
 
 ```
 php artisan migrate --seed
